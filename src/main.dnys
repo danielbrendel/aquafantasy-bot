@@ -1,9 +1,9 @@
 # AquaShell Fantastic Photo Discord Bot main script file
 
-require "strings";
-require "ini";
-require "fileio";
 require "array";
+require "fileio";
+require "ini";
+require "strings";
 
 global scriptpath string;
 global isnewday bool;
