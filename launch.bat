@@ -1,2 +1,2 @@
 @echo off
-start "" dnyAquaShell.exe src/main.dnys
+dnyAquaShell.exe src/main.dnys

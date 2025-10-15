@@ -32,5 +32,3 @@ if (%isnewday, -eq, true) {
 } else {
 	print "Same day, nothing to do.";
 };
-
-pause;
