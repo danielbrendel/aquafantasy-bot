@@ -12,62 +12,11 @@ global curlresponse string;
 
 getscriptpath scriptpath;
 
-array CurrentEnumeratedPhotos string 0 ();
-
 exec "%scriptpath/src/config.dnys";
+exec "%scriptpath/src/photos.dnys";
+exec "%scriptpath/src/days.dnys";
 
 call CFG_ReadSettings("%scriptpath/config/settings.ini") => void;
-
-function EnumImageFolder int(baseObject string, iteratedObject string)
-{
-	array_item_append CurrentEnumeratedPhotos "%baseObject%iteratedObject";
-
-    result 1;
-};
-
-function AcquirePhotoList void(photopath string)
-{
-	local curmonth string;
-	local monthnum int;
-	local season string;
-	local enumres bool;
-	local rndnum int;
-
-	fmtdatetime "%m" curmonth;
-
-	set monthnum <= %curmonth;
-
-	if (%monthnum, -lse, 2) {
-		set season <= "winter";
-	} elseif (%monthnum, -lse, 5) {
-		set season <= "spring";
-	} elseif (%monthnum, -lse, 8) {
-		set season <= "summer";
-	} elseif (%monthnum, -lse, 11) {
-		set season <= "autumn";
-	} else {
-		set season <= "winter";
-	};
-
-	denum {%photopath/%season/} "*.*" "EnumImageFolder" enumres;
-};
-
-function IsNewDay bool()
-{
-	local yearday string;
-	local prevyd string;
-
-	result false;
-
-	fmtdatetime "%j" yearday;
-
-	call CFG_YearDay("%scriptpath/config/yearday.txt") => prevyd;
-	if (%prevyd, -nt, %yearday) {
-		call CFG_UpdateYD("%scriptpath/config/yearday.txt", "%yearday") => void;
-
-		result true;
-	};
-};
 
 call IsNewDay() => isnewday;
 if (%isnewday, -eq, true) {

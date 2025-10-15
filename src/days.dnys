@@ -1,0 +1,18 @@
+# AquaShell Fantastic Photo Discord Bot day manager script file
+
+function IsNewDay bool()
+{
+	local yearday string;
+	local prevyd string;
+
+	result false;
+
+	fmtdatetime "%j" yearday;
+
+	call CFG_YearDay("%scriptpath/config/yearday.txt") => prevyd;
+	if (%prevyd, -nt, %yearday) {
+		call CFG_UpdateYD("%scriptpath/config/yearday.txt", "%yearday") => void;
+
+		result true;
+	};
+};

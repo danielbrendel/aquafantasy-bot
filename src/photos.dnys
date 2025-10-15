@@ -1,0 +1,37 @@
+# AquaShell Fantastic Photo Discord Bot photo manager script file
+
+array CurrentEnumeratedPhotos string 0 ();
+
+function EnumImageFolder int(baseObject string, iteratedObject string)
+{
+	array_item_append CurrentEnumeratedPhotos "%baseObject%iteratedObject";
+
+    result 1;
+};
+
+function AcquirePhotoList void(photopath string)
+{
+	local curmonth string;
+	local monthnum int;
+	local season string;
+	local enumres bool;
+	local rndnum int;
+
+	fmtdatetime "%m" curmonth;
+
+	set monthnum <= %curmonth;
+
+	if (%monthnum, -lse, 2) {
+		set season <= "winter";
+	} elseif (%monthnum, -lse, 5) {
+		set season <= "spring";
+	} elseif (%monthnum, -lse, 8) {
+		set season <= "summer";
+	} elseif (%monthnum, -lse, 11) {
+		set season <= "autumn";
+	} else {
+		set season <= "winter";
+	};
+
+	denum {%photopath/%season/} "*.*" "EnumImageFolder" enumres;
+};
