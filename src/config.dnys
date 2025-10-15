@@ -1,0 +1,66 @@
+# AquaShell Fantastic Photo Discord Bot config manager script file
+
+global INI_BotToken string;
+global INI_PhotoChannel string;
+global INI_ChatMessage string;
+
+function CFG_ReadSettings bool(inifile string)
+{
+    local checkfile bool;
+
+    result false;
+
+    fexists "%inifile" checkfile;
+    if (%checkfile, -eq, true) {
+        ini_read "%inifile" "settings" "token" INI_BotToken;
+        ini_read "%inifile" "settings" "channel" INI_PhotoChannel;
+        ini_read "%inifile" "settings" "message" INI_ChatMessage;
+
+        result true;
+    };
+};
+
+function CFG_YearDay string(ydfile string)
+{
+    local hFile int;
+    local isopened bool;
+    local cntfile string;
+
+    result "";
+
+    set cntfile <= "0";
+
+    fopen "%ydfile" false hFile;
+    fisopen %hFile isopened;
+    if (%isopened, -eq, true) {
+        freadline %hFile cntfile;
+
+        fclose %hFile;
+    };
+
+    if ("%cntfile", -eq, "") {
+        set cntfile <= "0";
+    };
+
+    result "%cntfile";
+};
+
+function CFG_UpdateYD void(ydfile string, newcontent string)
+{
+    local hFile int;
+    local doesexist bool;
+    local isopened bool;
+
+    fexists "%ydfile" doesexist;
+    if (%doesexist, -eq, true) {
+        fremove "%ydfile" void;
+    };
+
+    fopen "%ydfile" false hFile;
+    fisopen %hFile isopened;
+    if (%isopened, -eq, true) {
+        fwriteline %hFile "%newcontent";
+
+        fclose %hFile;
+    };
+};
