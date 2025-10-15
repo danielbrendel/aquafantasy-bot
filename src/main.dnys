@@ -1,4 +1,4 @@
-# AquaShell Fantastic Photo Discord Bot main script file
+# AquaShell Photo Discord Bot main script file
 
 require "array";
 require "fileio";
@@ -8,6 +8,7 @@ require "strings";
 global scriptpath string;
 global isnewday bool;
 global selrand int;
+global keeploop bool;
 global curlresponse string;
 
 getscriptpath scriptpath;
@@ -23,12 +24,29 @@ if (%isnewday, -eq, true) {
 	print "Acuiring photo list";
 	call AcquirePhotoList("%scriptpath/assets/img") => void;
 
-	random 0 %CurrentEnumeratedPhotos.length selrand;
+	print "Acquiring history list";
+	call AcquireHistoryList("%scriptpath/config/history.txt") => void;
+
+	print "Choosing random photo...";
+
+	set keeploop <= true;
+	while (%keeploop, -eq, true) {
+		random 0 %CurrentEnumeratedPhotos.length selrand;
+		call IsAlreadyInHistoryList("%CurrentEnumeratedPhotos[%selrand]") => keeploop;
+	};
+
 	print "Selected random photo: %CurrentEnumeratedPhotos[%selrand]";
 
-	sys {curl -X POST "https://discord.com/api/v10/channels/%INI_PhotoChannel/messages" -H "Authorization: Bot %INI_BotToken" -F "content=%INI_ChatMessage" -F "file=@\"%CurrentEnumeratedPhotos[%selrand]\""} curlresponse;
+	call AddToHistoryList("%scriptpath/config/history.txt", "%CurrentEnumeratedPhotos[%selrand]") => void;
+
+	sys {curl -X POST "https://discord.com/api/v10/channels/%INI_PhotoChannel/messages" -H "Authorization: Bot %INI_BotToken" -F "content=%INI_ChatMessage" -F "file=@\"%CurrentEnumeratedPhotos[%selrand]\"" --silent} curlresponse;
 
 	print "%curlresponse";
+
+	if (%CurrentEnumeratedPhotos.length, -eq, %PreviousPhotoList.length) {
+		print "All photos posted, resetting history...";
+		call ResetHistoryList("%scriptpath/config/history.txt") => void;
+	};
 } else {
 	print "Same day, nothing to do.";
 };

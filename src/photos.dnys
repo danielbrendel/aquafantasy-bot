@@ -1,6 +1,7 @@
-# AquaShell Fantastic Photo Discord Bot photo manager script file
+# AquaShell Photo Discord Bot photo manager script file
 
 array CurrentEnumeratedPhotos string 0 ();
+array PreviousPhotoList string 0 ();
 
 function EnumImageFolder int(baseObject string, iteratedObject string)
 {
@@ -11,27 +12,62 @@ function EnumImageFolder int(baseObject string, iteratedObject string)
 
 function AcquirePhotoList void(photopath string)
 {
-	local curmonth string;
-	local monthnum int;
-	local season string;
 	local enumres bool;
-	local rndnum int;
 
-	fmtdatetime "%m" curmonth;
+	denum {%photopath/} "*.*" "EnumImageFolder" enumres;
+};
 
-	set monthnum <= %curmonth;
+function AcquireHistoryList void(histlist string)
+{
+	local filehandle int;
+	local fileopened bool;
+	local eofreached bool;
+	local curreadline string;
 
-	if (%monthnum, -lse, 2) {
-		set season <= "winter";
-	} elseif (%monthnum, -lse, 5) {
-		set season <= "spring";
-	} elseif (%monthnum, -lse, 8) {
-		set season <= "summer";
-	} elseif (%monthnum, -lse, 11) {
-		set season <= "autumn";
-	} else {
-		set season <= "winter";
+	set eofreached <= false;
+
+	fopen "%histlist" false filehandle;
+	fisopen %filehandle fileopened;
+	if (%fileopened, -eq, true) {
+		while (%eofreached, -eq, false) {
+			freadline %filehandle curreadline;
+			fateof %filehandle eofreached;
+
+			array_item_append PreviousPhotoList "%curreadline";
+		};
+
+		fclose %filehandle;
 	};
+};
 
-	denum {%photopath/%season/} "*.*" "EnumImageFolder" enumres;
+function AddToHistoryList void(histlist string, addfile string)
+{
+	local filehandle int;
+	local fileopened bool;
+
+	fopen "%histlist" true filehandle;
+	fisopen %filehandle fileopened;
+	if (%fileopened, -eq, true) {
+		fwriteline %filehandle "%addfile";
+
+		fclose %filehandle;
+	};
+};
+
+function ResetHistoryList void(histlist string)
+{
+	local opresult bool;
+
+	fremove "%histlist" opresult;
+};
+
+function IsAlreadyInHistoryList bool(selphoto string)
+{
+	result false;
+
+	for (cnt, 0, %PreviousPhotoList.length, -inc) {
+		if ("%PreviousPhotoList[%cnt]", -eq, "%selphoto") {
+			result true;
+		};
+	};
 };

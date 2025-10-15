@@ -1,4 +1,4 @@
-# AquaShell Fantastic Photo Discord Bot day manager script file
+# AquaShell Photo Discord Bot day manager script file
 
 function IsNewDay bool()
 {

@@ -1,4 +1,4 @@
-# AquaShell Fantastic Photo Discord Bot config manager script file
+# AquaShell Photo Discord Bot config manager script file
 
 global INI_BotToken string;
 global INI_PhotoChannel string;
@@ -22,7 +22,7 @@ function CFG_ReadSettings bool(inifile string)
 
 function CFG_YearDay string(ydfile string)
 {
-    local hFile int;
+    local filehandle int;
     local isopened bool;
     local cntfile string;
 
@@ -30,12 +30,12 @@ function CFG_YearDay string(ydfile string)
 
     set cntfile <= "0";
 
-    fopen "%ydfile" false hFile;
-    fisopen %hFile isopened;
+    fopen "%ydfile" false filehandle;
+    fisopen %filehandle isopened;
     if (%isopened, -eq, true) {
-        freadline %hFile cntfile;
+        freadline %filehandle cntfile;
 
-        fclose %hFile;
+        fclose %filehandle;
     };
 
     if ("%cntfile", -eq, "") {
@@ -47,7 +47,7 @@ function CFG_YearDay string(ydfile string)
 
 function CFG_UpdateYD void(ydfile string, newcontent string)
 {
-    local hFile int;
+    local filehandle int;
     local doesexist bool;
     local isopened bool;
 
@@ -56,11 +56,11 @@ function CFG_UpdateYD void(ydfile string, newcontent string)
         fremove "%ydfile" void;
     };
 
-    fopen "%ydfile" false hFile;
-    fisopen %hFile isopened;
+    fopen "%ydfile" false filehandle;
+    fisopen %filehandle isopened;
     if (%isopened, -eq, true) {
-        fwriteline %hFile "%newcontent";
+        fwriteline %filehandle "%newcontent";
 
-        fclose %hFile;
+        fclose %filehandle;
     };
 };
